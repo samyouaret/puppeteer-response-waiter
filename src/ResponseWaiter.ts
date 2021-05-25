@@ -5,12 +5,14 @@ interface WaiterOptions {
     timeout?: number;
     ressetOnNavigate?: boolean,
     resourceType?: string,
+    waitFor?: requestFilter,
     debug?: boolean
 }
 
 type requestEventHanlder = (request: HTTPRequest) => void;
 type responseEventHanlder = (response: HTTPResponse) => void;
 type framenavigatedEventHanlder = (frame: any) => void;
+type requestFilter = (request: HTTPRequest) => boolean;
 
 class ResponseWaiter {
     options: WaiterOptions;
@@ -25,7 +27,6 @@ class ResponseWaiter {
         this.options = options || {};
         this.page = page;
         this.requestsCount = 0;
-
         if (!options.ressetOnNavigate) {
             options.ressetOnNavigate = true;
         }
@@ -35,10 +36,10 @@ class ResponseWaiter {
         }
 
         this.requestHandler = (request: HTTPRequest) => {
-            if (this.options.resourceType &&
-                request.resourceType() != this.options.resourceType) {
+            if (this.options.waitFor && !this.options.waitFor(request)) {
                 return;
             }
+            console.log('wait for requests', request.resourceType());
             ++this.requestsCount;
         }
 
