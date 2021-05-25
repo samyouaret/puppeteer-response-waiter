@@ -2,18 +2,23 @@
 
 ## Introduction
 
-this package is useful when you need to wait for all response to be recevied to do something like manipulating the DOM, usually when you need to track many requests at once.
-some use cases would be like scraping a infinite scroll page which you may not know which requests to track or to wait for.
+this package is useful when you need to wait for all responses to be received to do something like manipulating the DOM, usually when you need to track many requests at once.
 
-it a simple but powerful package event wait for thousands of requests at once and it guarentee to wait for all responses back.
+some use cases could be scraping an infinite scroll page and mostly you do not know which requests to track or to wait for.
 
-some requests may or may not happen, when a requests does not happen `Puppeteer-response-waiter` just skip without throwing any error
+it a simple but powerful package, it may be used even to wait for thousands of requests at once and it guarantees to wait for all responses.
 
-NOTE: if you may want to assert that a requests is triggered and wait for it you may use the built-in api of puppetter to do that.
+some requests may or may not happen, when a request does not happen `Puppeteer-response-waiter` just skip without throwing any error.
+
+**NOTE**: if you may want to assert that a request is triggered and wait for it you may use the puppeteer built-in `page` function `waitForResponse`.
 
 ## Installation
 
-    npm add puppeteer-response-waiter
+using npm
+
+    npm i puppeteer-response-waiter
+
+using yarn
 
     yarn add puppeteer-response-waiter
 
