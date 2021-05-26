@@ -5,9 +5,9 @@
   "private": false,
   "version": "0.0.1",
   "node": ">= 14.16.0",
-  "description": "a listen and wait for puppteer pending requests.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "A Package to listen and wait for puppteer pending requests.",
+  "main": "dist/ResponseWaiter.js",
+  "types": "dist/ResponseWaiter.d.ts",
   "homepage": "https://github.com/samyouaret/puppeteer-response-waiter",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "build": "tsc",
     "test": "jest -- ./tests --runInBand --detectOpenHandles"
   },
-  "prepublish": "tsc src",
+  "prepublish": "tsc",
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/node": "^15.6.0",
