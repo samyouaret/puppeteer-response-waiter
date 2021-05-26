@@ -29,7 +29,6 @@ using yarn
 ```js
 const puppeteer = require('puppeteer');
 const ResponseWaiter = require('puppeteer-response-waiter');
-import ResponseWaiter from '../src/ResponseWaiter'
 
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
@@ -55,7 +54,6 @@ await browser.close();
 ```js
 const puppeteer = require('puppeteer');
 const ResponseWaiter = require('puppeteer-response-waiter');
-import ResponseWaiter from '../src/ResponseWaiter'
 
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
