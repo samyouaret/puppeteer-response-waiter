@@ -24,7 +24,7 @@ using yarn
 
 ## Usage
 
-### a sample example to wait for all responses to be back before doing something
+### A sample example to wait for all responses to be back before doing something
 
 ```js
 const puppeteer = require('puppeteer');
@@ -36,6 +36,32 @@ let page = await browser.newPage();
 let responseWaiter = new ResponseWaiter(page, {
         timeout: 100,
         debug: true
+});
+// start listening
+responseWaiter.listen();
+await page.goto('http://somesampleurl.com');
+// do something here to trigger requesets
+await responseWaiter.waitForResponsesToFinish();
+// all requests are finished and responses are all returned back
+
+// remove listeners
+responseWaiter.stopListening();
+await browser.close();
+
+```
+
+### Wait for all image responses to be back before doing something
+
+```js
+const puppeteer = require('puppeteer');
+const ResponseWaiter = require('puppeteer-response-waiter');
+import ResponseWaiter from '../src/ResponseWaiter'
+
+let browser = await puppeteer.launch({ headless: false });
+let page = await browser.newPage();
+let responseWaiter = new ResponseWaiter(page, {
+        timeout: 100,
+        waitFor: (req) => req.resourceType() == 'image'
 });
 // start listening
 responseWaiter.listen();
