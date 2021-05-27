@@ -5,9 +5,10 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "target": "ES2020",
-        "outDir": "./dist",
+        "outDir": "dist",
         "declaration": true,
-        "sourceMap": true
+        "sourceMap": true,
+        // "esModuleInterop": true
     },
     "include": [
         "src/**/*"

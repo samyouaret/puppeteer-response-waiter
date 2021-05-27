@@ -20,7 +20,7 @@ type responseEventHanlder = (response: HTTPResponse) => void;
 type framenavigatedEventHanlder = (frame: any) => void;
 type requestFilter = (request: HTTPRequest) => boolean;
 
-class ResponseWaiter implements Waiter {
+export class ResponseWaiter implements Waiter {
     options: WaiterOptions;
     requestsCount: number;
     page: Page;
@@ -93,4 +93,5 @@ class ResponseWaiter implements Waiter {
     }
 }
 
+// module.exports = ResponseWaiter;
 export default ResponseWaiter;

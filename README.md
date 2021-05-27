@@ -28,7 +28,7 @@ using yarn
 
 ```js
 const puppeteer = require('puppeteer');
-const ResponseWaiter = require('puppeteer-response-waiter');
+const {ResponseWaiter} = require('puppeteer-response-waiter');
 
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
@@ -50,7 +50,7 @@ await browser.close();
 
 ```js
 const puppeteer = require('puppeteer');
-const ResponseWaiter = require('puppeteer-response-waiter');
+const {ResponseWaiter} = require('puppeteer-response-waiter');
 
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
@@ -78,7 +78,7 @@ using `waitFor` option you can filter the requests you need to wait for
 
 ```js
 const puppeteer = require('puppeteer');
-const ResponseWaiter = require('puppeteer-response-waiter');
+const {ResponseWaiter} = require('puppeteer-response-waiter');
 
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
