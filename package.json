@@ -8,6 +8,10 @@
   "description": "A Package to listen and wait for puppteer pending requests.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
   "homepage": "https://github.com/samyouaret/puppeteer-response-waiter",
   "repository": {
     "type": "git",
