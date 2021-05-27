@@ -10,6 +10,10 @@ let server = http.createServer((req: http.IncomingMessage, res: http.ServerRespo
         setTimeout(() => {
             res.end("success call");
         }, 200);
+    } else if (req.url == '/test-navigation') {
+        console.log("called in navigation");
+
+        res.end("success call");
     } else if (req.url == '/') {
         res.end(`
         <html>
@@ -42,13 +46,24 @@ afterEach((done) => {
 it('should wait for all requests', async () => {
     let browser = await puppeteer.launch({ headless: true });
     let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    responseWaiter.listen();
+    await page.goto(URL, { waitUntil: 'domcontentloaded' });
+    await responseWaiter.wait();
+    expect(responseWaiter.getRequestsCount()).toBe(0);
+    responseWaiter.stopListening();
+    await browser.close();
+});
+
+it('should wait for all requests usign custom timeout 100ms', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
     let responseWaiter = new ResponseWaiter(page, {
-        timeout: 200,
-        debug: true
+        timeout: 100,
     });
     responseWaiter.listen();
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
-    await responseWaiter.waitForResponsesToFinish();
+    await responseWaiter.wait();
     expect(responseWaiter.getRequestsCount()).toBe(0);
     responseWaiter.stopListening();
     await browser.close();
@@ -58,12 +73,11 @@ it('should wait for all xhr requests', async () => {
     let browser = await puppeteer.launch({ headless: true });
     let page = await browser.newPage();
     let responseWaiter = new ResponseWaiter(page, {
-        timeout: 200,
         waitFor: (req) => req.resourceType() == 'xhr'
     });
     responseWaiter.listen();
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
-    await responseWaiter.waitForResponsesToFinish();
+    await responseWaiter.wait();
     expect(responseWaiter.getRequestsCount()).toBe(0);
     responseWaiter.stopListening();
     await browser.close();
@@ -73,11 +87,22 @@ it('should wait for only defined resource type of requests', async () => {
     let browser = await puppeteer.launch({ headless: true });
     let page = await browser.newPage();
     let responseWaiter = new ResponseWaiter(page, {
-        timeout: 200,
         waitFor: (req) => req.resourceType() == 'image'
     });
     responseWaiter.listen();
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
+    expect(responseWaiter.getRequestsCount()).toBe(0);
+    responseWaiter.stopListening();
+    await browser.close();
+});
+
+it('should reset when a navigation happens', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    responseWaiter.listen();
+    await page.goto(URL, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${URL}/test-navigation`);
     expect(responseWaiter.getRequestsCount()).toBe(0);
     responseWaiter.stopListening();
     await browser.close();

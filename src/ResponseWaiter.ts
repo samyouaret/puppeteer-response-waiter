@@ -1,12 +1,18 @@
 import { HTTPRequest, HTTPResponse, Page } from 'puppeteer';
-// Some requests should not fail
-// maybe we should track them to assure program correctness
+
 interface WaiterOptions {
     timeout?: number;
-    ressetOnNavigate?: boolean,
+    resetOnNavigate?: boolean,
     resourceType?: string,
     waitFor?: requestFilter,
     debug?: boolean
+}
+
+interface Waiter {
+    listen(): void;
+    wait(): Promise<void>;
+    stopListening(): void;
+    getRequestsCount(): number;
 }
 
 type requestEventHanlder = (request: HTTPRequest) => void;
@@ -14,7 +20,7 @@ type responseEventHanlder = (response: HTTPResponse) => void;
 type framenavigatedEventHanlder = (frame: any) => void;
 type requestFilter = (request: HTTPRequest) => boolean;
 
-class ResponseWaiter {
+class ResponseWaiter implements Waiter {
     options: WaiterOptions;
     requestsCount: number;
     page: Page;
@@ -24,22 +30,22 @@ class ResponseWaiter {
     framenavigatedHandler: framenavigatedEventHanlder;
 
     constructor(page: Page, options?: WaiterOptions) {
-        this.options = options || {};
+        this.options = Object.assign({}, options);
         this.page = page;
         this.requestsCount = 0;
-        if (!options.ressetOnNavigate) {
-            options.ressetOnNavigate = true;
+        if (!this.options.resetOnNavigate) {
+            this.options.resetOnNavigate = true;
         }
 
-        if (!options.timeout) {
-            options.timeout = 500;
+        if (!this.options.timeout) {
+            this.options.timeout = 200;
         }
 
         this.requestHandler = (request: HTTPRequest) => {
             if (this.options.waitFor && !this.options.waitFor(request)) {
                 return;
             }
-            console.log('wait for requests', request.resourceType());
+            this.options.debug && console.log(`wait for request ${request.url()}`);
             ++this.requestsCount;
         }
 
@@ -58,22 +64,23 @@ class ResponseWaiter {
         }
     }
 
-    listen() {
+    listen(): void {
         this.page.on('request', this.requestHandler)
-        if (this.options.ressetOnNavigate) {
+        if (this.options.resetOnNavigate) {
             this.page.on('framenavigated', this.framenavigatedHandler);
         }
         this.page.on('requestfailed', this.requestfailedHandler);
         this.page.on('response', this.responseHandler);
     }
 
-    stopListening() {
+    stopListening(): void {
         this.page.off('request', this.requestHandler)
         this.page.off('requestfailed', this.requestfailedHandler);
         this.page.off('response', this.responseHandler);
+        this.page.off('framenavigated', this.framenavigatedHandler);
     }
 
-    async waitForResponsesToFinish(): Promise<void> {
+    async wait(): Promise<void> {
         this.options.debug && console.log('waiting...');
         do {
             this.options.debug && console.log(`waiting for ${this.requestsCount} pending reqs`);
