@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as puppeteer from 'puppeteer'
-import ResponseWaiter from '../src/ResponseWaiter'
+import ResponseWaiter from '../src'
 
 const PORT: number = 5000;
 const URL: string = `http://localhost:${PORT}`;
