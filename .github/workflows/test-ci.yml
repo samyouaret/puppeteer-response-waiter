@@ -24,5 +24,8 @@ jobs:
       - name: Install dependencies
       - run: yarn install
       - name: Test package
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: yarn test
 
