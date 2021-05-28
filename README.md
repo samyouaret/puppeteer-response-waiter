@@ -33,10 +33,10 @@ const {ResponseWaiter} = require('puppeteer-response-waiter');
 let browser = await puppeteer.launch({ headless: false });
 let page = await browser.newPage();
 let responseWaiter = new ResponseWaiter(page);
+await page.goto('http://somesampleurl.com');
 // start listening
 responseWaiter.listen();
-await page.goto('http://somesampleurl.com');
-// do something here to trigger requesets
+// do something here to trigger requests
 await responseWaiter.wait();
 // all requests are finished and responses are all returned back
 
@@ -57,10 +57,10 @@ let page = await browser.newPage();
 let responseWaiter = new ResponseWaiter(page, {
         timeout: 500,
 });
+await page.goto('http://somesampleurl.com');
 // start listening
 responseWaiter.listen();
-await page.goto('http://somesampleurl.com');
-// do something here to trigger requesets
+// do something here to trigger requests
 await responseWaiter.wait();
 // all requests are finished and responses are all returned back
 
@@ -85,10 +85,10 @@ let page = await browser.newPage();
 let responseWaiter = new ResponseWaiter(page, {
         waitFor: (req) => req.resourceType() == 'image'
 });
+await page.goto('http://somesampleurl.com');
 // start listening
 responseWaiter.listen();
-await page.goto('http://somesampleurl.com');
-// do something here to trigger requesets
+// do something here to trigger requests
 await responseWaiter.wait();
 // all requests are finished and responses are all returned back
 
