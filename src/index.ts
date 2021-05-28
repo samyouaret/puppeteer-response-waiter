@@ -3,7 +3,6 @@ import { HTTPRequest, HTTPResponse, Page } from 'puppeteer';
 interface WaiterOptions {
     timeout?: number;
     resetOnNavigate?: boolean,
-    resourceType?: string,
     waitFor?: requestFilter,
     debug?: boolean
 }
@@ -42,14 +41,17 @@ export class ResponseWaiter implements Waiter {
         }
 
         this.requestHandler = (request: HTTPRequest) => {
-            if (this.options.waitFor && !this.options.waitFor(request)) {
+            if (!this.shouldWait(request)) {
                 return;
             }
             this.options.debug && console.log(`wait for request ${request.url()}`);
             ++this.requestsCount;
         }
 
-        this.responseHandler = () => {
+        this.responseHandler = (response: HTTPResponse) => {
+            if (!this.shouldWait(response.request())) {
+                return;
+            }
             this.requestsCount > 0 && --this.requestsCount;
         };
 
@@ -59,9 +61,16 @@ export class ResponseWaiter implements Waiter {
         };
 
         this.requestfailedHandler = (request: HTTPRequest) => {
+            if (!this.shouldWait(request)) {
+                return;
+            }
             this.options.debug && console.log(`requests failed ${request.url()} ${request.failure().errorText}`);
             this.requestsCount > 0 && --this.requestsCount;
         }
+    }
+
+    shouldWait(request: HTTPRequest): boolean {
+        return this.options.waitFor && this.options.waitFor(request);
     }
 
     listen(): void {
@@ -93,5 +102,4 @@ export class ResponseWaiter implements Waiter {
     }
 }
 
-// module.exports = ResponseWaiter;
 export default ResponseWaiter;
