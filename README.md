@@ -1,5 +1,7 @@
 # Puppeteer-response-waiter
 
+![build tests](https://github.com/samyouaret/puppeteer-response-waiter/actions/workflows/test-ci.yml/badge.svg)
+
 ## Introduction
 
 this package is useful when you need to wait for all responses to be received to do something like manipulating the DOM, usually when you need to **track many requests at once** or some requests are **lately received**.
