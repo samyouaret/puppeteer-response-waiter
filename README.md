@@ -48,6 +48,61 @@ await browser.close();
 
 ```
 
+### Wait for all image responses to be back before doing something
+
+using `waitFor` option you can filter the requests you need to wait for,combine it with `onResponse` you can control flow of requests and responses as you want
+
+```js
+const puppeteer = require('puppeteer');
+const {ResponseWaiter} = require('puppeteer-response-waiter');
+
+let browser = await puppeteer.launch({ headless: false });
+let page = await browser.newPage();
+let responseWaiter = new ResponseWaiter(page, {
+        waitFor: (req) => req.resourceType() == 'image'
+        
+});
+await page.goto('http://somesampleurl.com');
+// start listening
+responseWaiter.listen();
+// do something here to trigger requests
+await responseWaiter.wait();
+// all requests are finished and responses are all returned back
+
+// remove listeners
+responseWaiter.stopListening();
+await browser.close();
+
+```
+
+### Wait and use all json responses
+
+combine `waitFor` with `onResponse` you can control flow of requests and responses as you want to check correct responses, download responses, files, images...etc.
+
+```js
+const puppeteer = require('puppeteer');
+const {ResponseWaiter} = require('puppeteer-response-waiter');
+
+let browser = await puppeteer.launch({ headless: false });
+let page = await browser.newPage();
+let responseWaiter = new ResponseWaiter(page, {
+    waitFor: (req) => req.resourceType() == 'fetch',
+    // get you response here and do something with it
+    onResponse: async (response)=> console.log(await response.json())// do something with response
+});
+await page.goto('http://somesampleurl.com');
+// start listening
+responseWaiter.listen();
+// do something here to trigger requests
+await responseWaiter.wait();
+// all requests are finished and responses are all returned back
+
+// remove listeners
+responseWaiter.stopListening();
+await browser.close();
+
+```
+
 ### An example using custom timeout
 
 ```js
@@ -73,32 +128,6 @@ await browser.close();
 ```
 
 **NOTE**: The `timeout` option is really mandatory for the package to work, choosing the right `timeout` depends on the network and resource that your script is using, for most cases `100-500ms` are just fine, by default `Puppeteer-response-waiter` use `200ms`.
-
-### Wait for all image responses to be back before doing something
-
-using `waitFor` option you can filter the requests you need to wait for
-
-```js
-const puppeteer = require('puppeteer');
-const {ResponseWaiter} = require('puppeteer-response-waiter');
-
-let browser = await puppeteer.launch({ headless: false });
-let page = await browser.newPage();
-let responseWaiter = new ResponseWaiter(page, {
-        waitFor: (req) => req.resourceType() == 'image'
-});
-await page.goto('http://somesampleurl.com');
-// start listening
-responseWaiter.listen();
-// do something here to trigger requests
-await responseWaiter.wait();
-// all requests are finished and responses are all returned back
-
-// remove listeners
-responseWaiter.stopListening();
-await browser.close();
-
-```
 
 ## Other considerations
 

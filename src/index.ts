@@ -4,7 +4,8 @@ interface WaiterOptions {
     timeout?: number;
     resetOnNavigate?: boolean,
     waitFor?: requestFilter,
-    debug?: boolean
+    onResponse?: responseEventHanlder;
+    debug?: boolean,
 }
 
 interface Waiter {
@@ -37,7 +38,7 @@ export class ResponseWaiter implements Waiter {
         }
 
         if (!this.options.timeout) {
-            this.options.timeout = 200;
+            this.options.timeout = 100;
         }
 
         this.requestHandler = (request: HTTPRequest) => {
@@ -53,6 +54,9 @@ export class ResponseWaiter implements Waiter {
                 return;
             }
             this.requestsCount > 0 && --this.requestsCount;
+            if (this.options.onResponse) {
+                this.options.onResponse(response);
+            }
         };
 
         this.framenavigatedHandler = () => {
