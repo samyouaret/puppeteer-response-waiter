@@ -75,7 +75,7 @@ await browser.close();
 
 ```
 
-### Wait and use all json responses
+### Wait and use all JSON responses
 
 combine `waitFor` with `onResponse` you can control flow of requests and responses as you want to check correct responses, download responses, files, images...etc.
 
