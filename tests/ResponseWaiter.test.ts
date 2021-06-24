@@ -44,13 +44,66 @@ afterEach((done) => {
     });
 })
 
+function checkListenersCount(page: puppeteer.Page, count: number) {
+    expect(page.listenerCount('request')).toBe(count);
+    expect(page.listenerCount('response')).toBe(count);
+    expect(page.listenerCount('requestfailed')).toBe(count);
+    expect(page.listenerCount('framenavigated')).toBe(count);
+}
+
+it('should set isListening properly when listen and stop listening', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    responseWaiter.listen();
+    expect(responseWaiter.isListening).toBeTruthy();
+    checkListenersCount(page, 1);
+    responseWaiter.stopListening();
+    expect(responseWaiter.isListening).toBeFalsy();
+    await browser.close();
+});
+
+it('should wait only once', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    responseWaiter.listen();
+    responseWaiter.listen();
+    responseWaiter.listen();
+    expect(responseWaiter.isListening).toBeTruthy();
+    checkListenersCount(page, 1);
+    responseWaiter.stopListening();
+    await browser.close();
+});
+
+it('should remove all listeners', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    responseWaiter.listen();
+    responseWaiter.stopListening();
+    checkListenersCount(page, 0);
+    expect(responseWaiter.isListening).toBeFalsy();
+    await browser.close();
+});
+
+it('should not wait when there are no listeners', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page);
+    let waited = await responseWaiter.wait();
+    expect(waited).toBeFalsy();
+    await browser.close();
+});
+
 it('should wait for all requests', async () => {
     let browser = await puppeteer.launch({ headless: true });
     let page = await browser.newPage();
     let responseWaiter = new ResponseWaiter(page);
     responseWaiter.listen();
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
-    await responseWaiter.wait();
+    let waited = await responseWaiter.wait();
+    expect(waited).toBeTruthy();
     expect(responseWaiter.getRequestsCount()).toBe(0);
     responseWaiter.stopListening();
     await browser.close();

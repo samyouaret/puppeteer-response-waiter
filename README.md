@@ -127,7 +127,7 @@ await browser.close();
 
 ```
 
-**NOTE**: The `timeout` option is really mandatory for the package to work, choosing the right `timeout` depends on the network and resource that your script is using, for most cases `100-500ms` are just fine, by default `Puppeteer-response-waiter` use `200ms`.
+**NOTE**: The `timeout` option is really mandatory for the package to work, choosing the right `timeout` depends on the network and resource that your script is using, for most cases `100-500ms` are just fine, by default `Puppeteer-response-waiter` use `100ms`.
 
 ## Other considerations
 

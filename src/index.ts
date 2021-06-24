@@ -10,7 +10,7 @@ interface WaiterOptions {
 
 interface Waiter {
     listen(): void;
-    wait(): Promise<void>;
+    wait(): Promise<boolean>;
     stopListening(): void;
     getRequestsCount(): number;
 }
@@ -24,6 +24,7 @@ export class ResponseWaiter implements Waiter {
     options: WaiterOptions;
     requestsCount: number;
     page: Page;
+    isListening: boolean;
     requestHandler: requestEventHanlder;
     responseHandler: responseEventHanlder;
     requestfailedHandler: requestEventHanlder;
@@ -78,27 +79,39 @@ export class ResponseWaiter implements Waiter {
     }
 
     listen(): void {
+        if (this.isListening) {
+            return;
+        }
         this.page.on('request', this.requestHandler)
         if (this.options.resetOnNavigate) {
             this.page.on('framenavigated', this.framenavigatedHandler);
         }
         this.page.on('requestfailed', this.requestfailedHandler);
         this.page.on('response', this.responseHandler);
+        this.isListening = true;
     }
 
     stopListening(): void {
+        if (!this.isListening) {
+            return;
+        }
         this.page.off('request', this.requestHandler)
         this.page.off('requestfailed', this.requestfailedHandler);
         this.page.off('response', this.responseHandler);
         this.page.off('framenavigated', this.framenavigatedHandler);
+        this.isListening = false;
     }
 
-    async wait(): Promise<void> {
+    async wait(): Promise<boolean> {
+        if (!this.isListening) {
+            return false;
+        }
         this.options.debug && console.log('waiting...');
         do {
             this.options.debug && console.log(`waiting for ${this.requestsCount} pending reqs`);
             await this.page.waitForTimeout(this.options.timeout);
         } while (this.requestsCount > 0);
+        return true;
     }
 
     getRequestsCount(): number {
