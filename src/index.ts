@@ -34,7 +34,7 @@ export class ResponseWaiter implements Waiter {
         this.options = Object.assign({}, options);
         this.page = page;
         this.requestsCount = 0;
-        if (!this.options.resetOnNavigate) {
+        if (this.options.resetOnNavigate == undefined) {
             this.options.resetOnNavigate = true;
         }
 

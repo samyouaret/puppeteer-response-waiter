@@ -63,7 +63,7 @@ it('should set isListening properly when listen and stop listening', async () =>
     await browser.close();
 });
 
-it('should wait only once', async () => {
+it('should register listeners only once', async () => {
     let browser = await puppeteer.launch({ headless: true });
     let page = await browser.newPage();
     let responseWaiter = new ResponseWaiter(page);
@@ -71,6 +71,7 @@ it('should wait only once', async () => {
     responseWaiter.listen();
     responseWaiter.listen();
     expect(responseWaiter.isListening).toBeTruthy();
+    expect(responseWaiter.options.resetOnNavigate).toBeTruthy();
     checkListenersCount(page, 1);
     responseWaiter.stopListening();
     await browser.close();
@@ -83,6 +84,20 @@ it('should remove all listeners', async () => {
     responseWaiter.listen();
     responseWaiter.stopListening();
     checkListenersCount(page, 0);
+    expect(responseWaiter.isListening).toBeFalsy();
+    await browser.close();
+});
+
+it('should ignore resetting when reset option is false', async () => {
+    let browser = await puppeteer.launch({ headless: true });
+    let page = await browser.newPage();
+    let responseWaiter = new ResponseWaiter(page, {
+        resetOnNavigate: false
+    });
+    expect(responseWaiter.options.resetOnNavigate).toBeFalsy();
+    responseWaiter.listen();
+    expect(page.listenerCount('framenavigated')).toBe(0);
+    responseWaiter.stopListening();
     expect(responseWaiter.isListening).toBeFalsy();
     await browser.close();
 });
